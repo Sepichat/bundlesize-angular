@@ -1,0 +1,29 @@
+<div class="container">
+    <div>
+        <form name="getNpmSuggestions">
+            <input 
+                name="packageName"
+                placeholder="NPM package name"
+                [(ngModel)]="npmPackageName"
+                (input)="getPackageSuggestion()"
+            />
+        </form>
+    </div>
+    <ul *ngIf="!packageSelected">
+        <li 
+            *ngFor="let package of (listPackages$ | async)"
+            (click)="fetchData(package)"
+        >
+            {{package.package.name | json}}
+        </li>
+
+    </ul>
+    <div
+        *ngIf="packageSelected"
+    >
+        <div>
+            {{packageSelected.name}}@{{packageSelected.version}}
+        </div>
+        <button (click)="packageSelected = null" >Back to search</button>
+    </div>
+</div>
