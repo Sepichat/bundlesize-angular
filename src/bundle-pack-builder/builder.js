@@ -16,7 +16,11 @@ const Builder = {
     async bundlePackage(packageName, installPath) {
         Builder.prepareRequire(packageName, installPath).split('/').slice(2).join('/');
         const bundleCommand = `npx webpack index=${installPath} --config src/bundle-pack-builder/webpack.config.js`;
-        await asyncExec(bundleCommand)
+        try {
+            await asyncExec(bundleCommand)
+        } catch (e) {
+            console.log('error', e);
+        }
     },
 }
 
