@@ -3,6 +3,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const context = require('./config');
 
 module.exports = {
+  mode: "production",
   entry: '',
   context: context.workspacePath,
   output: {
