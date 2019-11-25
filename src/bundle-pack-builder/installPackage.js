@@ -1,7 +1,7 @@
 const rimraf = require('rimraf');
 const path = require('path');
 const mkdir = require('mkdir-promise');
-const { exec } = require('child_process');
+const { asyncExec } = require('./utils');
 const { workspacePath } = require('./config');
 const Builder = require('./builder');
 
@@ -24,19 +24,19 @@ const InstallPackage = {
     async installPackage(packageName) {
         await InstallPackage.prepareWorkspace(packageName);
         const installCommand = `npm install ${packageName}`;
-        exec(installCommand, {
-                cwd: InstallPackage.getPath(packageName)
-            },
-            (err, stdout, stderr) => {
-                if(err) {
-                    console.log(stderr);
-                    InstallPackage.cleanUpPostBuild(packageName);
-                } else {
-                    console.log('Result command: ', stdout);
-                    Builder.bundlePackage(packageName, InstallPackage.getPath(packageName));
-                }
-            }
-        );
+        try {
+            asyncExec(installCommand, {cwd: InstallPackage.getPath(packageName)});
+        } catch (err) {
+            console.log('Error status: ', err);
+            console.log('Starting cleanup');
+            InstallPackage.cleanUpPostBuild(packageName);
+        }
+        await Builder.bundlePackage(packageName, InstallPackage.getPath(packageName));
+    },
+
+    async getBundleSize(packageName) {
+        await InstallPackage.installPackage(packageName);
+        return {size: 512123}
     },
 }
 
