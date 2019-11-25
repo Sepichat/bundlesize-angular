@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "run-p start-listener start-angular",
-    "start-angular": "ng serve",
+    "start-angular": "ng serve --proxy-config proxy.conf.json",
     "start-listener": "node src/startServer.js",
     "build": "ng build",
     "test": "ng test",
