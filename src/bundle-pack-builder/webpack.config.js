@@ -1,9 +1,10 @@
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
-
+const context = require('./config');
 
 module.exports = {
-  entry: './node_modules/react/',
+  entry: '',
+  context: context.workspacePath,
   output: {
     filename: 'main.js',
     path: path.resolve(__dirname, 'dist'),
@@ -19,7 +20,8 @@ module.exports = {
             drop_console: true,
             ecma: 6
           }
-        }
+        },
+        extractComments: true,
       }),
 
     ]
