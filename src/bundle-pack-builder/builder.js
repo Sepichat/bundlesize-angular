@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const { asyncExec } = require('./utils');
+const webpack = require('webpack');
+const prepareWebpackConfig = require('./webpack.config');
 
 const Builder = {
     prepareRequire(packageName, installPath) {
@@ -13,14 +14,14 @@ const Builder = {
             console.log(err)
         }
     },
-    async bundlePackage(packageName, installPath) {
-        Builder.prepareRequire(packageName, installPath).split('/').slice(2).join('/');
-        const bundleCommand = `npx webpack index=${installPath} --config src/bundle-pack-builder/webpack.config.js`;
-        try {
-            await asyncExec(bundleCommand)
-        } catch (e) {
-            console.log('error', e);
-        }
+    bundlePackage(packageName, installPath) {
+        const entryPoint = Builder.prepareRequire(packageName, installPath);
+        const webpackCompiler = webpack(prepareWebpackConfig(entryPoint))
+        return new Promise((resolve, reject) => {
+            webpackCompiler.run((err, stats) => {
+                resolve(stats);
+            });
+        })
     },
 }
 

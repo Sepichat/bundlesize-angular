@@ -31,16 +31,28 @@ const InstallPackage = {
             console.log('Starting cleanup');
             InstallPackage.cleanUpPostBuild(packageName);
         }
-        await Builder.bundlePackage(packageName, InstallPackage.getPath(packageName));
+        return await Builder.bundlePackage(packageName, InstallPackage.getPath(packageName));
     },
 
     async getBundleSize(packageName) {
-        await InstallPackage.installPackage(packageName);
-        return {size: 512123}
+        const stats = await InstallPackage.installPackage(packageName);
+        const result = stats.toJson({
+            assets: true,
+            modules: false,
+            source: false,
+            providedExports: false,
+            chunks: false,
+        });
+        const mainAsset = result.assets.find((asset) => asset.name === 'main.js');
+        return {
+            name: packageName,
+            size: mainAsset.size,
+            gzippedSize: 5125478
+        };
     },
 }
 
 module.exports = InstallPackage;
 
 // InstallPackage.installPackage('mukiyodaplop'); // fail
-InstallPackage.installPackage('react'); // OK
+InstallPackage.getBundleSize('react'); // OK
