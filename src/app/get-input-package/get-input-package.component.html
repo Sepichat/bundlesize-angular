@@ -21,8 +21,19 @@
     <div
         *ngIf="packageSelected"
     >
-        <div>
+        <h2>
             {{packageSelected.name}}@{{packageSelected.version}}
+        </h2>
+        <div 
+            *ngIf="packageData"
+            class="packageData"
+        >
+            <div>
+                Package size: {{packageData.size}}
+            </div>
+            <div>
+                Package Gzipped size: {{packageData.gzippedSize}}
+            </div>
         </div>
         <button (click)="packageSelected = null" >Back to search</button>
     </div>

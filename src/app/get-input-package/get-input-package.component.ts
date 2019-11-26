@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { PackageData } from './../model/package-data';
 import { GetBundleSizeService } from './../shared/get-bundle-size.service';
 import { GetPackageSuggestionsService } from './../shared/get-package-suggestions.service';
 
@@ -13,6 +14,7 @@ export class GetInputPackageComponent {
   public npmPackageName: string;
   public packageSelected = null;
   public listPackages$;
+  public packageData: PackageData | null = null;
 
   constructor(
     private getPackageSuggestionsService: GetPackageSuggestionsService,
@@ -20,15 +22,15 @@ export class GetInputPackageComponent {
   ) { }
 
   getPackageSuggestion() {
+    this.packageSelected = null;
+    this.packageData = null;
     this.listPackages$ = this.getPackageSuggestionsService.getSuggestions(this.npmPackageName);
   }
 
   fetchData(npmPackage) {
     this.packageSelected = npmPackage.package;
     this.getBundleSizeService.getBundleData(this.packageSelected.name).subscribe(
-      (data) => {
-        console.log("Server data", data);
-      }
+      data => { this.packageData = data; console.log(1111111111)}
     );
   }
 

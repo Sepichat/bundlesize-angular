@@ -1,4 +1,14 @@
 .container {
     width: 100vw;
     height: 100vh;
+    text-align: center;
+    margin-top: 50px;
+}
+.container > div {
+    margin: 20px auto;
+}
+
+ul {
+    margin: auto;
+    width: 400px;
 }
