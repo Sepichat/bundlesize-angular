@@ -1,12 +1,42 @@
+import { HttpRequest } from '@angular/common/http';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { GetBundleSizeService } from './get-bundle-size.service';
 
 describe('GetBundleSizeService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  let service: GetBundleSizeService;
+  let httpMock: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule]
+    });
+    service = TestBed.get(GetBundleSizeService)
+    httpMock = TestBed.get(HttpTestingController);
+  });
+
+  afterEach(() => {
+    // Finally, assert that there are no outstanding requests.
+    httpMock.verify();
+  });
 
   it('should be created', () => {
-    const service: GetBundleSizeService = TestBed.get(GetBundleSizeService);
     expect(service).toBeTruthy();
+  });
+
+  it('should call the backend with the package name', () => {
+    const packageName = 'myPackage';
+    spyOn<any>(service['http'], 'get').and.callThrough();
+    service.getBundleData(packageName).subscribe();
+    const req = httpMock.expectOne((request: HttpRequest<any>) => {
+      return (
+        request.url === service.getBundleDataURL &&
+        request.params.has('q') &&
+        request.params.get('q') === String(packageName)
+      );
+    }, 'getBundleData');
+    req.flush({});
+    expect(service['http'].get).toHaveBeenCalled();
   });
 });

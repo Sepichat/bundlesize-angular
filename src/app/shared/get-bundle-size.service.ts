@@ -9,12 +9,13 @@ import { PackageData } from './../model/package-data';
 })
 export class GetBundleSizeService {
 
+  public readonly getBundleDataURL = '/bundle/packageSize';
   constructor(
     private http: HttpClient
   ) { }
 
   getBundleData(packageName) {
     const params = new HttpParams().set('q', packageName);
-    return this.http.get('/bundle/packageSize', {params}) as Observable<PackageData>;
+    return this.http.get(this.getBundleDataURL, {params}) as Observable<PackageData>;
   }
 }
