@@ -68,7 +68,7 @@ const InstallPackage = {
                 );
             });
             const nextToLastMinor = nextToLastMinors.pop();
-            return  [latestVersion, previousMajor, lastMinor, nextToLastMinor];
+            return  [latestVersion, lastMinor, nextToLastMinor, previousMajor];
         } catch (err) {
             console.log('Error retrieving package versions: ', err);
         }
