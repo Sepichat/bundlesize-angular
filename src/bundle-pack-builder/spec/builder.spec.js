@@ -4,7 +4,7 @@ const rimraf = require('rimraf');
 const fs = require('fs');
 
 describe('When preparing the package to be bundled', () => {
-    it('should create the file, require the package and return the entrypoint', async () => {
+    it('should create the file, require the package and return the entrypoint', () => {
         const entryPoint = Builder.prepareRequire('test', './');
         const expected = 'index.js';
         expect(entryPoint).toBe(expected);
