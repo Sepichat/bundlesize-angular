@@ -1,5 +1,4 @@
 const InstallPackage = require('../installPackage') ;
-const fs = require('fs');
 const config = require('../config');
 
 describe('When preparing the workspace', () => {
