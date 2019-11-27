@@ -5,11 +5,12 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class GetPackageSuggestionsService {
+  public readonly getSuggestionURL = 'https://api.npms.io/v2/search/suggestions';
 
   constructor(private http: HttpClient) { }
 
   getSuggestions(packageName: string) {
     const params = new HttpParams().set('q', packageName);
-    return this.http.get('https://api.npms.io/v2/search/suggestions', {params});
+    return this.http.get(this.getSuggestionURL, {params});
   }
 }
