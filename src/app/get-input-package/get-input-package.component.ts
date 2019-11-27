@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import Chart from 'chart.js';
 
 import { PackageData } from './../model/package-data';
 import { GetBundleSizeService } from './../shared/get-bundle-size.service';
@@ -15,6 +16,7 @@ export class GetInputPackageComponent {
   public packageSelected = null;
   public listPackages$;
   public packageData: PackageData | null = null;
+  public chartId = 'packageChart';
 
   constructor(
     private getPackageSuggestionsService: GetPackageSuggestionsService,
@@ -30,8 +32,66 @@ export class GetInputPackageComponent {
   fetchData(npmPackage) {
     this.packageSelected = npmPackage.package;
     this.getBundleSizeService.getBundleData(this.packageSelected.name).subscribe(
-      data => { this.packageData = data; }
+      data => {
+        this.packageData = data;
+        this.displayChart();
+      }
     );
+  }
+
+  prepareChartData() {
+    const labels = this.getLabels();
+    const size = this.getPackagesSize();
+    const gzippedSize = this.getPackagesGzippedSize();
+    return {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Gzipped size',
+            data: gzippedSize,
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }, {
+          label: 'Bundled size',
+          data: size,
+          backgroundColor: 'rgba(255, 206, 86, 0.2)',
+          borderColor: 'rgba(255, 206, 86, 1)',
+          borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            xAxes: [{
+              stacked: true
+            }],
+            yAxes: [{
+              ticks: {
+                beginAtZero: true,
+              }
+            }]
+        }
+      }
+    };
+  }
+
+  getLabels() {
+    return this.packageData.listPackages.map(npmPackage => (npmPackage.version));
+  }
+
+  getPackagesSize() {
+    return this.packageData.listPackages.map(npmPackage => (npmPackage.size / 1024));
+  }
+
+  getPackagesGzippedSize() {
+    return this.packageData.listPackages.map(npmPackage => (npmPackage.size / 1024 / 4));
+  }
+
+  displayChart() {
+    const config = this.prepareChartData();
+    const chartContext = document.getElementById(this.chartId);
+    const chart = new Chart(chartContext, config);
   }
 
 }
