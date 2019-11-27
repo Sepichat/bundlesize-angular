@@ -49,10 +49,10 @@ export class GetInputPackageComponent {
         labels,
         datasets: [{
           label: 'Gzipped size',
-            data: gzippedSize,
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1
+          data: gzippedSize,
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1
         }, {
           label: 'Bundled size',
           data: size,
@@ -85,7 +85,7 @@ export class GetInputPackageComponent {
   }
 
   getPackagesGzippedSize() {
-    return this.packageData.listPackages.map(npmPackage => (npmPackage.size / 1024 / 4));
+    return this.packageData.listPackages.map(npmPackage => (npmPackage.gzippedSize / 1024 ));
   }
 
   displayChart() {
