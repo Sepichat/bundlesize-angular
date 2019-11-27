@@ -5,10 +5,24 @@
     margin-top: 50px;
 }
 .container > div {
-    margin: 20px auto;
+    margin-top: 40px;
+}
+
+input {
+    width: 300px;;
 }
 
 ul {
     margin: auto;
-    width: 400px;
+    padding: 10px 0;
+    width: 300px;
+    list-style-type: none;
+    padding-inline-start: 0;
+    &.border {
+        border: 3px solid rgb(113, 183, 241);
+
+    }
+    li:hover {
+        background-color: lightskyblue;
+    }
 }

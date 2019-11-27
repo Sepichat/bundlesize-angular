@@ -1,6 +1,6 @@
 <div class="container">
     <div>
-        <form name="getNpmSuggestions">
+        <form name="getNpmSuggestions" autocomplete="off">
             <input 
                 name="packageName"
                 placeholder="NPM package name"
@@ -9,7 +9,8 @@
             />
         </form>
     </div>
-    <ul *ngIf="!packageSelected">
+    <ul *ngIf="!packageSelected"
+        [ngClass]="{border: (listPackages$ | async)?.length > 0}">
         <li 
             *ngFor="let package of (listPackages$ | async)"
             (click)="fetchData(package)"

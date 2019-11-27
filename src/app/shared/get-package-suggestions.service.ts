@@ -10,7 +10,9 @@ export class GetPackageSuggestionsService {
   constructor(private http: HttpClient) { }
 
   getSuggestions(packageName: string) {
-    const params = new HttpParams().set('q', packageName);
-    return this.http.get(this.getSuggestionURL, {params});
+    if (packageName) {
+      const params = new HttpParams().set('q', packageName);
+      return this.http.get(this.getSuggestionURL, {params});
+    }
   }
 }

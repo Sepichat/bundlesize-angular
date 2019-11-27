@@ -92,7 +92,7 @@ const InstallPackage = {
                 name: packageName,
                 version: version,
                 size: mainAsset.size,
-                gzippedSize: 5125478,
+                gzippedSize: mainAsset.size / 10,
                 asset: mainAsset
             });
 
