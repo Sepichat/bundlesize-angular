@@ -14,7 +14,6 @@ export class GetBundleSizeService {
   ) { }
 
   getBundleData(packageName) {
-    console.log(packageName);
     const params = new HttpParams().set('q', packageName);
     return this.http.get('/bundle/packageSize', {params}) as Observable<PackageData>;
   }

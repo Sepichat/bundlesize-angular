@@ -24,17 +24,21 @@
         <h2>
             {{packageSelected.name}}@{{packageSelected.version}}
         </h2>
-        <div 
+        <ng-container 
             *ngIf="packageData"
-            class="packageData"
         >
-            <div>
-                Package size: {{packageData.size}}
-            </div>
-            <div>
-                Package Gzipped size: {{packageData.gzippedSize}}
-            </div>
-        </div>
+            <div
+               *ngFor="let package of packageData.listPackages"
+                class="packageData"
+            > 
+                <div>
+                    {{packageData.name}}@{{package.version}} : {{package.size}}
+                </div>
+                <div>
+                    <!-- Package Gzipped size: {{package.gzippedSize}} -->
+                </div>
+            </div> 
+        </ng-container>
         <button (click)="packageSelected = null" >Back to search</button>
     </div>
 </div>

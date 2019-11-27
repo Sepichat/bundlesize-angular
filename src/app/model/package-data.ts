@@ -1,5 +1,12 @@
 export interface PackageData {
     name: string;
-    size: number;
+    listPackages: Array<Package>;
+}
+
+export interface Package {
+    assets: {};
     gzippedSize: number;
+    name: string;
+    size: number;
+    version: string;
 }

@@ -30,7 +30,7 @@ export class GetInputPackageComponent {
   fetchData(npmPackage) {
     this.packageSelected = npmPackage.package;
     this.getBundleSizeService.getBundleData(this.packageSelected.name).subscribe(
-      data => { this.packageData = data; console.log(1111111111)}
+      data => { this.packageData = data; }
     );
   }
 
