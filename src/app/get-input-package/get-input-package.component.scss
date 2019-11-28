@@ -20,9 +20,25 @@ ul {
     padding-inline-start: 0;
     &.border {
         border: 3px solid rgb(113, 183, 241);
-
     }
     li:hover {
         background-color: lightskyblue;
     }
+}
+
+table {
+    margin: auto;
+    border-collapse: collapse;
+    border-spacing: 0;
+
+    td, th {
+        border: 1px solid rgb(162, 162, 219)
+    }
+}
+
+.chartContainer {
+    width: 600px;
+    height: 400px;
+    margin: auto;
+    margin-top: 20px;
 }

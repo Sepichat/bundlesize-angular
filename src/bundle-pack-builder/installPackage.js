@@ -1,6 +1,8 @@
 const rimraf = require('rimraf');
 const path = require('path');
 const mkdir = require('mkdir-promise');
+const gzipSize = require('gzip-size');
+const fs = require('fs');
 const { asyncExec } = require('./utils');
 const { workspacePath } = require('./config');
 const Builder = require('./builder');
@@ -23,7 +25,7 @@ const InstallPackage = {
     },
 
     async installPackage(packageName) {
-        const bundles = {}
+        const bundles = {};
         const listToInstall = await InstallPackage.getVersionsToCompare(packageName);
         for(const version of listToInstall) {
             const path = await InstallPackage.prepareWorkspace(`${packageName}@${version}`);
@@ -36,10 +38,22 @@ const InstallPackage = {
                 InstallPackage.cleanUpPostBuild(packageName);
             }
             const stats =  await Builder.bundlePackage(packageName, path);
-            bundles[version] = stats;
+            const gzippedSize = InstallPackage.getGzippedSize();
+            bundles[version] = {stats, gzippedSize};
         }
         return bundles;
+    },
 
+    getGzippedSize() {
+        const assetPath = path.join(
+            process.cwd(),
+            'src',
+            'bundle-pack-builder',
+            'dist',
+            'main.js'
+        );
+        const data = fs.readFileSync(assetPath);
+        return gzipSize.sync(data);
     },
 
     async getVersionsToCompare(packageName) {
@@ -78,9 +92,10 @@ const InstallPackage = {
 
     async getBundleSize(packageName) {
         const data = [];
-        const statsList = await InstallPackage.installPackage(packageName);
-        for(const version in statsList) {
-            const result = statsList[version].toJson({
+        const bundlesData = await InstallPackage.installPackage(packageName);
+        for(const version in bundlesData) {
+            const bundle = bundlesData[version];
+            const result = bundle.stats.toJson({
                 assets: true,
                 modules: false,
                 source: false,
@@ -92,10 +107,10 @@ const InstallPackage = {
                 name: packageName,
                 version: version,
                 size: mainAsset.size,
-                gzippedSize: mainAsset.size / 10,
+                gzippedSize: bundle.gzippedSize,
                 asset: mainAsset
             });
-
+            console.log(bundle.gzippedSize);
         }
         return {
             name: packageName,

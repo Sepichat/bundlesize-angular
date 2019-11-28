@@ -23,24 +23,45 @@
         *ngIf="packageSelected"
     >
         <h2>
-            {{packageSelected.name}}@{{packageSelected.version}}
+            Latest version: {{packageSelected.name}}@{{packageSelected.version}}
         </h2>
         <ng-container 
             *ngIf="packageData"
         >
-            <div
-               *ngFor="let package of packageData.listPackages"
-                class="packageData"
-            > 
-                <div>
-                    {{packageData.name}}@{{package.version}} : {{package.size}}
-                </div>
-                <div>
-                    <!-- Package Gzipped size: {{package.gzippedSize}} -->
-                </div>
-            </div> 
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th
+                            *ngFor="let package of packageData.listPackages"
+                        >
+                            {{package.version}}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Minified size</td>
+                        <td
+                            *ngFor="let package of packageData.listPackages"
+                        >
+                            {{(package.size / 1024).toFixed(1)}} KB
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Gzipped size</td>
+                        <td
+                            *ngFor="let package of packageData.listPackages"
+                        >
+                            {{(package.gzippedSize /1024).toFixed(1)}} KB
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </ng-container>
-        <canvas id="{{chartId}}" ></canvas>
+        <div class="chartContainer">
+            <canvas id="{{chartId}}" ></canvas>
+        </div>
         <button (click)="packageSelected = null" >Back to search</button>
     </div>
 </div>
