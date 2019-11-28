@@ -33,6 +33,7 @@ export class GetInputPackageComponent {
   fetchData(npmPackage) {
     this.isLoading = true;
     this.packageSelected = npmPackage.package;
+    this.npmPackageName = `${this.packageSelected.name}@${this.packageSelected.version}`;
     this.getBundleSizeService.getBundleData(this.packageSelected.name).subscribe(
       data => {
         this.isLoading = false;

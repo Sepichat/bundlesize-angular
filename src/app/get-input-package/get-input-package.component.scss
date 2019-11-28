@@ -11,20 +11,24 @@ $blueColor:  rgb(113, 183, 241);
 }
 
 input {
-    width: 300px;;
+    width: 250px;
 }
 
 ul {
     margin: auto;
-    padding: 10px 0;
-    width: 300px;
+    width: 250px;
     list-style-type: none;
-    padding-inline-start: 0;
+    padding-inline-start: 0px;
+    text-align: left;
     &.border {
-        border: 3px solid $blueColor;
+        border: 2px solid $blueColor;
     }
-    li:hover {
-        background-color: $blueColor;
+    li {
+        margin: 2px 0;
+        padding-left: 4px;
+        &:hover {
+            background-color: $blueColor;
+        }
     }
 }
 
@@ -33,13 +37,17 @@ table {
     border-collapse: collapse;
     border-spacing: 0;
 
+    tbody td:nth-child(odd) {
+        background-color: rgb(222, 231, 243);
+    }
     td, th {
-        border: 1px solid $blueColor
+        border: 1px solid lightgray;
+        padding: 5px;
     }
 }
 
 .chartContainer {
-    width: 600px;
+    width: 400px;
     height: 400px;
     margin: auto;
     margin-top: 20px;
