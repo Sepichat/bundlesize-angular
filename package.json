@@ -25,6 +25,7 @@
     "@angular/router": "~8.2.14",
     "builtin-modules": "^3.1.0",
     "chart.js": "^2.9.3",
+    "escape-string-regexp": "^2.0.0",
     "fastify": "^2.10.0",
     "gzip-size": "^5.1.1",
     "mkdir-promise": "^1.0.0",

@@ -12,14 +12,19 @@ const InstallPackage = {
         return path.join(workspacePath, packageName);
     },
 
-    cleanUpPostBuild(packageName) {
-        const installPath = InstallPackage.getPath(packageName);
+    cleanUpPostBuild(packageName, version) {
+        const installPath = path.join(
+            InstallPackage.getPath(packageName),
+            `@${version}`
+        );
         const assetPath = path.join(
             process.cwd(),
             'src',
             'bundle-pack-builder',
-            'dist'
+            'dist',
+            '*'
         );
+        console.log('aaaaa', installPath, assetPath);
         rimraf(assetPath, () => {});
         rimraf(installPath, () => {});
     },
@@ -35,22 +40,32 @@ const InstallPackage = {
         const bundles = {};
         const listToInstall = await InstallPackage.getVersionsToCompare(packageName);
         for(const version of listToInstall) {
-            const path = await InstallPackage.prepareWorkspace(`${packageName}@${version}`);
-            const installCommand = `npm install ${packageName}@${version}`;
-            try {
-                asyncExec(installCommand, {cwd: path});
-            } catch (err) {
-                console.log('Error status: ', err);
-                console.log('Starting cleanup');
-                InstallPackage.cleanUpPostBuild(packageName);
-            }
-            const stats =  await Builder.bundlePackage(packageName, path);
+            let stats = await InstallPackage.build(packageName, version);
             const errorObject = stats.toJson('errors-only');
-            const missingModules = InstallPackage.parseErrors(errorObject);
+            const missingModules = InstallPackage.parseErrors(errorObject, packageName);
+            if (missingModules.length) {
+                stats = await InstallPackage.build(packageName, version, missingModules);
+            }
             const gzippedSize = InstallPackage.getGzippedSize();
             bundles[version] = {stats, gzippedSize};
+            InstallPackage.cleanUpPostBuild(packageName, version);
         }
         return bundles;
+    },
+
+    async build(packageName, version, missingModules = []) {
+        console.log(version, missingModules);
+        const path = await InstallPackage.prepareWorkspace(`${packageName}@${version}`);
+        const installCommand = `npm install ${packageName}@${version}`;
+        try {
+            await asyncExec(installCommand, {cwd: path});
+        } catch (err) {
+            console.log('Error status: ', err);
+            console.log('Starting cleanup');
+            InstallPackage.cleanUpPostBuild(packageName, version);
+        }
+        const stats =  await Builder.bundlePackage(packageName, path, missingModules);
+        return stats;
     },
 
     parseErrors(errorObject) {
@@ -58,7 +73,7 @@ const InstallPackage = {
         const regex = /Can't resolve '([\S]*?)'/
         errorObject.errors.forEach(error => {
             const missingModule = error.match(regex)[1];
-            missingModules.push(missingModule)
+                missingModules.push(missingModule)
         });
         return missingModules;
     },
@@ -78,7 +93,7 @@ const InstallPackage = {
         return null;
     },
 
-    getMinorVersions: function (listVersions, latestMajor, latestMinor, offset = 1) {
+    getMinorVersions (listVersions, latestMajor, latestMinor, offset = 1) {
         return listVersions.filter((version) => {
             return (
                 Number(version.split('.')[0]) === (latestMajor) &&
@@ -161,7 +176,6 @@ const InstallPackage = {
             });
             console.log(mainAsset.size, bundle.gzippedSize);
         }
-        InstallPackage.cleanUpPostBuild(packageName);
         return {
             name: packageName,
             listPackages: data

@@ -14,9 +14,9 @@ const Builder = {
             console.log(err)
         }
     },
-    bundlePackage(packageName, installPath) {
+    bundlePackage(packageName, installPath, missingModules) {
         const entryPoint = Builder.prepareRequire(packageName, installPath);
-        const webpackCompiler = webpack(prepareWebpackConfig(entryPoint))
+        const webpackCompiler = webpack(prepareWebpackConfig({entryPoint, missingModules}))
         return new Promise((resolve, reject) => {
             webpackCompiler.run((err, stats) => {
                 resolve(stats);

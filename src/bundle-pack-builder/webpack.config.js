@@ -1,6 +1,7 @@
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const builtinModules = require('builtin-modules');
+const escape = require('escape-string-regexp');
 
 const providedModulesByNode = {}
 builtinModules.forEach(nodeModule => {
@@ -9,7 +10,8 @@ builtinModules.forEach(nodeModule => {
 providedModulesByNode['console'] = false;
 providedModulesByNode['process'] = false;
 
-function prepareWebpackConfig(entryPoint) {
+function prepareWebpackConfig({entryPoint, missingModules}) {
+  const missingModulesRegex = prepareMissingModulesRegex(missingModules);
   return {
     mode: "production",
     entry: entryPoint,
@@ -33,8 +35,24 @@ function prepareWebpackConfig(entryPoint) {
           extractComments: true,
         }),
       ]
-    }
+    },
+    externals: missingModules.length ? 
+      function(context, request , callback) {
+        if (missingModulesRegex.test(request)){
+          return callback(null, 'commonjs ' + request);
+        }
+        callback();
+      } : []
   }
+}
+
+function prepareMissingModulesRegex(missingModules) {
+  if (missingModules.length) {
+    return new RegExp(
+      missingModules.map((missingModule) => `^${escape(missingModule)}$`).join('|')
+    );
+  }
+  return null;
 }
 
 module.exports = prepareWebpackConfig;
