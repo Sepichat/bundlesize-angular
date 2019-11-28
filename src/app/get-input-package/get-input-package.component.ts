@@ -56,13 +56,15 @@ export class GetInputPackageComponent {
           data: gzippedSize,
           backgroundColor: 'rgba(54, 162, 235, 0.2)',
           borderColor: 'rgba(54, 162, 235, 1)',
-          borderWidth: 1
+          borderWidth: 1,
+          barThickness: 20
         }, {
           label: 'Bundled size',
           data: size,
           backgroundColor: 'rgba(255, 206, 86, 0.2)',
           borderColor: 'rgba(255, 206, 86, 1)',
-          borderWidth: 1
+          borderWidth: 1,
+          barThickness: 20
         }]
     },
     options: {
@@ -73,6 +75,10 @@ export class GetInputPackageComponent {
             yAxes: [{
               ticks: {
                 beginAtZero: true,
+              },
+              scaleLabel: {
+                display: true,
+                labelString: 'size in KB'
               }
             }]
         }
