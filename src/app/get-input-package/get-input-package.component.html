@@ -15,7 +15,7 @@
             *ngFor="let package of (listPackages$ | async)"
             (click)="fetchData(package)"
         >
-            {{package.package.name | json}}
+            {{package.package.name}}
         </li>
 
     </ul>
@@ -48,7 +48,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Minified size</td>
+                        <th>Minified size</th>
                         <td
                             *ngFor="let package of packageData.listPackages"
                         >
@@ -56,7 +56,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>Gzipped size</td>
+                        <th>Gzipped size</th>
                         <td
                             *ngFor="let package of packageData.listPackages"
                         >
