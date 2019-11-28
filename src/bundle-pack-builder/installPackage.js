@@ -13,6 +13,7 @@ const InstallPackage = {
     },
 
     cleanUpPostBuild(packageName, version) {
+        //TODO FIX ME
         const installPath = path.join(
             InstallPackage.getPath(packageName),
             `@${version}`
@@ -24,7 +25,6 @@ const InstallPackage = {
             'dist',
             '*'
         );
-        console.log('aaaaa', installPath, assetPath);
         rimraf(assetPath, () => {});
         rimraf(installPath, () => {});
     },
@@ -105,6 +105,7 @@ const InstallPackage = {
     async getVersionsToCompare(packageName) {
         const command = `npm view ${packageName} versions --json`;
         try {
+            // TODO FIX ME WHEN THERE ARE ONE 2 versions - MOGA
             let missingVersion = false;
             const listVersionsString = await asyncExec(command);
             const listVersions = JSON.parse(listVersionsString);
@@ -184,6 +185,3 @@ const InstallPackage = {
 }
 
 module.exports = InstallPackage;
-
-// InstallPackage.installPackage('mukiyodaplop'); // fail
-InstallPackage.getBundleSize('@angular/cli'); // OK

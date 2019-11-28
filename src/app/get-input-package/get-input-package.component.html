@@ -45,7 +45,7 @@
                         <td
                             *ngFor="let package of packageData.listPackages"
                         >
-                            {{(package.size / 1024).toFixed(1)}} KB
+                            {{package.size | filesize}}
                         </td>
                     </tr>
                     <tr>
@@ -53,7 +53,7 @@
                         <td
                             *ngFor="let package of packageData.listPackages"
                         >
-                            {{(package.gzippedSize /1024).toFixed(1)}} KB
+                            {{package.gzippedSize | filesize}}
                         </td>
                     </tr>
                 </tbody>

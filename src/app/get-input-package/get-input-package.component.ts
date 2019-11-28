@@ -81,11 +81,11 @@ export class GetInputPackageComponent {
   }
 
   getPackagesSize() {
-    return this.packageData.listPackages.map(npmPackage => (npmPackage.size / 1024));
+    return this.packageData.listPackages.map(npmPackage => ((npmPackage.size / 1024).toFixed(1)));
   }
 
   getPackagesGzippedSize() {
-    return this.packageData.listPackages.map(npmPackage => (npmPackage.gzippedSize / 1024 ));
+    return this.packageData.listPackages.map(npmPackage => ((npmPackage.gzippedSize / 1024).toFixed(1)));
   }
 
   displayChart() {

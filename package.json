@@ -29,6 +29,7 @@
     "fastify": "^2.10.0",
     "gzip-size": "^5.1.1",
     "mkdir-promise": "^1.0.0",
+    "ngx-filesize": "^2.0.1",
     "rimraf": "^3.0.0",
     "rxjs": "~6.4.0",
     "tslib": "^1.10.0",
