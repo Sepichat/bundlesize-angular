@@ -14,6 +14,13 @@ const InstallPackage = {
 
     cleanUpPostBuild(packageName) {
         const installPath = InstallPackage.getPath(packageName);
+        const assetPath = path.join(
+            process.cwd(),
+            'src',
+            'bundle-pack-builder',
+            'dist'
+        );
+        rimraf(assetPath, () => {});
         rimraf(installPath, () => {});
     },
 
@@ -52,13 +59,26 @@ const InstallPackage = {
             'dist',
             'main.js'
         );
-        const data = fs.readFileSync(assetPath);
-        return gzipSize.sync(data);
+        if (fs.existsSync(assetPath)) {
+            const data = fs.readFileSync(assetPath);
+            return gzipSize.sync(data);
+        }
+        return null;
+    },
+
+    getMinorVersions: function (listVersions, latestMajor, latestMinor, offset = 1) {
+        return listVersions.filter((version) => {
+            return (
+                Number(version.split('.')[0]) === (latestMajor) &&
+                Number(version.split('.')[1]) === (latestMinor - offset)
+            );
+        });
     },
 
     async getVersionsToCompare(packageName) {
         const command = `npm view ${packageName} versions --json`;
         try {
+            let missingVersion = false;
             const listVersionsString = await asyncExec(command);
             const listVersions = JSON.parse(listVersionsString);
             const latestVersion = listVersions[listVersions.length - 1];
@@ -68,27 +88,44 @@ const InstallPackage = {
                 return Number(version.split('.')[0]) === (latestMajor - 1);
             });
             const previousMajor = previousMajors.pop();
-            const lastMinors = listVersions.filter((version) => {
-                return (
-                    Number(version.split('.')[0]) === (latestMajor) &&
-                    Number(version.split('.')[1]) === (latestMinor - 1)
+            let lastMinors = this.getMinorVersions(listVersions, latestMajor, latestMinor);
+            let lastMinor;
+            if (!lastMinors.length) {
+                lastMinors = this.getMinorVersions(listVersions,
+                    Number(previousMajor.split('.')[0]),
+                    Number(previousMajor.split('.')[1])
                 );
-            });
-            const lastMinor = lastMinors.pop();
-            const nextToLastMinors = listVersions.filter((version) => {
+                missingVersion = true;
+            }
+            lastMinor = lastMinors.pop();
+            let nextToLastMinors = listVersions.filter((version) => {
                 return (
                     Number(version.split('.')[0]) === (latestMajor) &&
                     Number(version.split('.')[1]) === (latestMinor - 2)
                 );
             });
-            const nextToLastMinor = nextToLastMinors.pop();
-            return  [latestVersion, lastMinor, nextToLastMinor, previousMajor];
+            if (!nextToLastMinors.length) {
+                nextToLastMinors = this.getMinorVersions(listVersions,
+                    Number(previousMajor.split('.')[0]),
+                    Number(previousMajor.split('.')[1]),
+                    2
+                    );
+                    if (!nextToLastMinors.length) {
+                    nextToLastMinors = listVersions.filter((version) => {
+                        return Number(version.split('.')[0]) === (latestMajor - 2);
+                    });
+                }
+                missingVersion = true;
+            }
+            nextToLastMinor = nextToLastMinors.pop();
+            if (!missingVersion) {
+                return  [latestVersion, lastMinor, nextToLastMinor, previousMajor];
+            }
+            return  [latestVersion, previousMajor, lastMinor, nextToLastMinor];
         } catch (err) {
             console.log('Error retrieving package versions: ', err);
         }
     },
-
-
 
     async getBundleSize(packageName) {
         const data = [];
@@ -112,6 +149,7 @@ const InstallPackage = {
             });
             console.log(mainAsset.size, bundle.gzippedSize);
         }
+        InstallPackage.cleanUpPostBuild(packageName);
         return {
             name: packageName,
             listPackages: data
@@ -122,4 +160,4 @@ const InstallPackage = {
 module.exports = InstallPackage;
 
 // InstallPackage.installPackage('mukiyodaplop'); // fail
-InstallPackage.getBundleSize('angular'); // OK
+InstallPackage.getBundleSize('react'); // OK
