@@ -25,6 +25,13 @@
         <h2>
             Latest version: {{packageSelected.name}}@{{packageSelected.version}}
         </h2>
+        <div 
+            class="lds-ripple"
+            *ngIf="isLoading"
+        >
+            <div></div>
+            <div></div>
+        </div>
         <ng-container 
             *ngIf="packageData"
         >
@@ -62,6 +69,5 @@
         <div class="chartContainer">
             <canvas id="{{chartId}}" ></canvas>
         </div>
-        <button (click)="packageSelected = null" >Back to search</button>
     </div>
 </div>

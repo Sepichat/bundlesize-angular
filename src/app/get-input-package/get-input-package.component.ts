@@ -17,6 +17,7 @@ export class GetInputPackageComponent {
   public listPackages$;
   public packageData: PackageData | null = null;
   public chartId = 'packageChart';
+  public isLoading = false;
 
   constructor(
     private getPackageSuggestionsService: GetPackageSuggestionsService,
@@ -30,9 +31,11 @@ export class GetInputPackageComponent {
   }
 
   fetchData(npmPackage) {
+    this.isLoading = true;
     this.packageSelected = npmPackage.package;
     this.getBundleSizeService.getBundleData(this.packageSelected.name).subscribe(
       data => {
+        this.isLoading = false;
         this.packageData = data;
         this.displayChart();
       }
@@ -89,9 +92,11 @@ export class GetInputPackageComponent {
   }
 
   displayChart() {
-    const config = this.prepareChartData();
     const chartContext = document.getElementById(this.chartId);
-    const chart = new Chart(chartContext, config);
+    if (chartContext) {
+      const config = this.prepareChartData();
+      const chart = new Chart(chartContext, config);
+    }
   }
 
 }
