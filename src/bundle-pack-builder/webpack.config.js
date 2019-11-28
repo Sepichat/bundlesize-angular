@@ -1,5 +1,13 @@
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
+const builtinModules = require('builtin-modules');
+
+const providedModulesByNode = {}
+builtinModules.forEach(nodeModule => {
+  providedModulesByNode[nodeModule] = 'empty';
+})
+providedModulesByNode['console'] = false;
+providedModulesByNode['process'] = false;
 
 function prepareWebpackConfig(entryPoint) {
   return {
@@ -9,6 +17,7 @@ function prepareWebpackConfig(entryPoint) {
       filename: 'main.js',
       path: path.resolve(__dirname, 'dist'),
     },
+    node: providedModulesByNode,
     optimization: {
       minimize: true,
       minimizer: [
@@ -23,7 +32,6 @@ function prepareWebpackConfig(entryPoint) {
           },
           extractComments: true,
         }),
-  
       ]
     }
   }

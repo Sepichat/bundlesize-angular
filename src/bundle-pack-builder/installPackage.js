@@ -110,7 +110,7 @@ const InstallPackage = {
                 gzippedSize: bundle.gzippedSize,
                 asset: mainAsset
             });
-            console.log(bundle.gzippedSize);
+            console.log(mainAsset.size, bundle.gzippedSize);
         }
         return {
             name: packageName,
@@ -122,4 +122,4 @@ const InstallPackage = {
 module.exports = InstallPackage;
 
 // InstallPackage.installPackage('mukiyodaplop'); // fail
-InstallPackage.getBundleSize('react'); // OK
+InstallPackage.getBundleSize('angular'); // OK
