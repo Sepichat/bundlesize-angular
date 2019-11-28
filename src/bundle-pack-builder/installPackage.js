@@ -45,10 +45,22 @@ const InstallPackage = {
                 InstallPackage.cleanUpPostBuild(packageName);
             }
             const stats =  await Builder.bundlePackage(packageName, path);
+            const errorObject = stats.toJson('errors-only');
+            const missingModules = InstallPackage.parseErrors(errorObject);
             const gzippedSize = InstallPackage.getGzippedSize();
             bundles[version] = {stats, gzippedSize};
         }
         return bundles;
+    },
+
+    parseErrors(errorObject) {
+        const missingModules = [];
+        const regex = /Can't resolve '([\S]*?)'/
+        errorObject.errors.forEach(error => {
+            const missingModule = error.match(regex)[1];
+            missingModules.push(missingModule)
+        });
+        return missingModules;
     },
 
     getGzippedSize() {
@@ -160,4 +172,4 @@ const InstallPackage = {
 module.exports = InstallPackage;
 
 // InstallPackage.installPackage('mukiyodaplop'); // fail
-InstallPackage.getBundleSize('react'); // OK
+InstallPackage.getBundleSize('@angular/cli'); // OK
