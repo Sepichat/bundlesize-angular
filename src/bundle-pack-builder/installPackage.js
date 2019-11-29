@@ -13,10 +13,8 @@ const InstallPackage = {
     },
 
     cleanUpPostBuild(packageName, version) {
-        //TODO FIX ME
         const installPath = path.join(
-            InstallPackage.getPath(packageName),
-            `@${version}`
+            `${InstallPackage.getPath(packageName)}@${version}`
         );
         const assetPath = path.join(
             process.cwd(),
@@ -32,7 +30,6 @@ const InstallPackage = {
     async prepareWorkspace(packageName) {
         const installPath = InstallPackage.getPath(packageName);
         await mkdir(installPath);
-        console.log('workspace created');
         return installPath;
     },
 
@@ -54,7 +51,6 @@ const InstallPackage = {
     },
 
     async build(packageName, version, missingModules = []) {
-        console.log(version, missingModules);
         const path = await InstallPackage.prepareWorkspace(`${packageName}@${version}`);
         const installCommand = `npm install ${packageName}@${version}`;
         try {
@@ -105,51 +101,58 @@ const InstallPackage = {
     async getVersionsToCompare(packageName) {
         const command = `npm view ${packageName} versions --json`;
         try {
-            // TODO FIX ME WHEN THERE ARE ONE 2 versions - MOGA
             let missingVersion = false;
             const listVersionsString = await asyncExec(command);
             const listVersions = JSON.parse(listVersionsString);
-            const latestVersion = listVersions[listVersions.length - 1];
-            const latestMajor = Number(latestVersion.split('.')[0]);
-            const latestMinor = Number(latestVersion.split('.')[1]);
-            const previousMajors = listVersions.filter((version) => {
-                return Number(version.split('.')[0]) === (latestMajor - 1);
-            });
-            const previousMajor = previousMajors.pop();
-            let lastMinors = this.getMinorVersions(listVersions, latestMajor, latestMinor);
-            let lastMinor;
-            if (!lastMinors.length) {
-                lastMinors = this.getMinorVersions(listVersions,
-                    Number(previousMajor.split('.')[0]),
-                    Number(previousMajor.split('.')[1])
-                );
-                missingVersion = true;
-            }
-            lastMinor = lastMinors.pop();
-            let nextToLastMinors = listVersions.filter((version) => {
-                return (
-                    Number(version.split('.')[0]) === (latestMajor) &&
-                    Number(version.split('.')[1]) === (latestMinor - 2)
-                );
-            });
-            if (!nextToLastMinors.length) {
-                nextToLastMinors = this.getMinorVersions(listVersions,
-                    Number(previousMajor.split('.')[0]),
-                    Number(previousMajor.split('.')[1]),
-                    2
-                    );
-                    if (!nextToLastMinors.length) {
-                    nextToLastMinors = listVersions.filter((version) => {
-                        return Number(version.split('.')[0]) === (latestMajor - 2);
+            switch (listVersions.length) {
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    return listVersions;
+                default:
+                    const latestVersion = listVersions[listVersions.length - 1];
+                    const latestMajor = Number(latestVersion.split('.')[0]);
+                    const latestMinor = Number(latestVersion.split('.')[1]);
+                    const previousMajors = listVersions.filter((version) => {
+                        return Number(version.split('.')[0]) === (latestMajor - 1);
                     });
-                }
-                missingVersion = true;
+                    const previousMajor = previousMajors.pop();
+                    let lastMinors = this.getMinorVersions(listVersions, latestMajor, latestMinor);
+                    let lastMinor;
+                    if (!lastMinors.length) {
+                        lastMinors = this.getMinorVersions(listVersions,
+                            Number(previousMajor.split('.')[0]),
+                            Number(previousMajor.split('.')[1])
+                        );
+                        missingVersion = true;
+                    }
+                    lastMinor = lastMinors.pop();
+                    let nextToLastMinors = listVersions.filter((version) => {
+                        return (
+                            Number(version.split('.')[0]) === (latestMajor) &&
+                            Number(version.split('.')[1]) === (latestMinor - 2)
+                        );
+                    });
+                    if (!nextToLastMinors.length) {
+                        nextToLastMinors = this.getMinorVersions(listVersions,
+                            Number(previousMajor.split('.')[0]),
+                            Number(previousMajor.split('.')[1]),
+                            2
+                            );
+                            if (!nextToLastMinors.length) {
+                            nextToLastMinors = listVersions.filter((version) => {
+                                return Number(version.split('.')[0]) === (latestMajor - 2);
+                            });
+                        }
+                        missingVersion = true;
+                    }
+                    nextToLastMinor = nextToLastMinors.pop();
+                    if (!missingVersion) {
+                        return  [latestVersion, lastMinor, nextToLastMinor, previousMajor];
+                    }
+                    return  [latestVersion, previousMajor, lastMinor, nextToLastMinor];
             }
-            nextToLastMinor = nextToLastMinors.pop();
-            if (!missingVersion) {
-                return  [latestVersion, lastMinor, nextToLastMinor, previousMajor];
-            }
-            return  [latestVersion, previousMajor, lastMinor, nextToLastMinor];
         } catch (err) {
             console.log('Error retrieving package versions: ', err);
         }
