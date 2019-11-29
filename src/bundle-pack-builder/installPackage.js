@@ -178,7 +178,6 @@ const InstallPackage = {
                 gzippedSize: bundle.gzippedSize,
                 asset: mainAsset
             });
-            console.log(mainAsset.size, bundle.gzippedSize);
         }
         return {
             name: packageName,
